@@ -1,23 +1,25 @@
-const eventId = new URLSearchParams(window.location.search).get("eventId");
+const productId = new URLSearchParams(window.location.search).get("productId");
 
-const endpoint = eventId
-  ? "https://striveschool-api.herokuapp.com/api/agenda/" + eventId
-  : "https://striveschool-api.herokuapp.com/api/agenda/";
-const method = eventId ? "PUT" : "POST";
+const endpoint = productId
+  ? "https://striveschool-api.herokuapp.com/api/product/" + productId
+  : "https://striveschool-api.herokuapp.com/api/product/";
+const method = productId ? "PUT" : "POST";
 
 window.onload = async () => {
-  if (eventId) {
+  if (productId) {
     const response = await fetch(endpoint);
-    const eventObj = await response.json();
+    const productObj = await response.json();
 
-    const { name, description, time, price } = eventObj;
+    const { name, description, brand, imageUrl, price } = productObj;
 
     console.log(time);
 
     document.getElementById("name").value = name;
     document.getElementById("description").value = description;
-    document.getElementById("time").value = time.split(".")[0];
+    document.getElementById("brand").value = brand;
+    // document.getElementById("brand").value = brand.split(".")[0];
     document.getElementById("price").value = price;
+    document.getElementById("imageUrl").value = imageUrl;
 
     const deleteBtn = document.querySelector(".btn-danger").classList.remove("d-none");
   }
@@ -38,29 +40,34 @@ const handleSubmit = async (event) => {
   console.log("HEY FORM GOT SUBMITTED");
 
   try {
-    const myEvent = {
+    const myProduct = {
       name: document.getElementById("name").value,
       description: document.getElementById("description").value,
+      brand: document.getElementById("brand").value,
+      imageUrl: (document.getElementById("imageUrl").value = imageUrl),
       price: document.getElementById("price").value,
-      time: document.getElementById("time").value,
     };
 
     const response = await fetch(endpoint, {
       method: method,
-      body: JSON.stringify(myEvent),
+      body: JSON.stringify(myProduct),
       headers: {
         "Content-Type": "application/json",
+        //Authorization:
+        //"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzZjZmQyYWQ0YmUzZDAwMTU4NDYwMzgiLCJpYXQiOjE2NjgwODcwODIsImV4cCI6MTY2OTI5NjY4Mn0.VtbiHHI8R5YkZzRvBB0wBIO4SqtTZr10KGYVPHIVfOc",
       },
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzZjZmQyYWQ0YmUzZDAwMTU4NDYwMzgiLCJpYXQiOjE2NjgwODcwODIsImV4cCI6MTY2OTI5NjY4Mn0.VtbiHHI8R5YkZzRvBB0wBIO4SqtTZr10KGYVPHIVfOc",
     });
 
     if (!response.ok) throw new Error("generic error, something wrong with the fetch");
 
-    const event = await response.json();
+    const product = await response.json();
     isLoading(false);
-    if (eventId) {
-      alert("Event with id: " + event._id + "got edited successfully");
+    if (productId) {
+      alert("Product with id: " + product._id + "got edited successfully");
     } else {
-      alert("Event created successfully, id is:  " + event._id);
+      alert("Product created successfully, id is:  " + product._id);
     }
   } catch (error) {
     alert("Something went wrong, " + error);
@@ -75,7 +82,8 @@ const handleDelete = async () => {
     });
 
     const deletedObj = await response.json();
-    alert("Event DELETED, id was: " + deletedObj._id);
+    alert("PRODUCT DELETED, id was: " + deletedObj._id);
     window.location.assign("/");
   }
 };
+// console.log("testing");
